@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DHS POS</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+    header {
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+    header h1 { margin: 0; }
+    .container { padding: 18px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .card {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #0001;
+    }
+    .card h3 { margin: 0 0 8px; }
+    .number {
+      font-size: 26px;
+      font-weight: bold;
+      color: #15803d;
+    }
+    .menu {
+      margin-top: 20px;
+      display: grid;
+      gap: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #15803d;
+      color: white;
+      font-size: 16px;
+      text-align: left;
+    }
+    @media (min-width: 800px) {
+      .cards { grid-template-columns: repeat(4, 1fr); }
+      .container { max-width: 1200px; margin: auto; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>DHS POS</h1>
+  <small>Online & Offline Sales Management System</small>
+</header>
+
+<div class="container">
+
+  <h2>Dashboard</h2>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Today's Sales</h3>
+      <div class="number">TZS 0</div>
+    </div>
+
+    <div class="card">
+      <h3>Products</h3>
+      <div class="number">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Low Stock</h3>
+      <div class="number">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Branches</h3>
+      <div class="number">0</div>
+    </div>
+  </div>
+
+  <div class="menu">
+    <button>🛒 Sales / POS</button>
+    <button>📦 Products</button>
+    <button>📊 Stock</button>
+    <button>👥 Customers</button>
+    <button>🏢 Branches / Offices</button>
+    <button>📈 Reports</button>
+    <button>👤 Users</button>
+    <button>⚙️ Settings</button>
+  </div>
+
+</div>
+
+</body>
+</html>
