@@ -1,108 +1,756 @@
 <!DOCTYPE html>
 <html lang="sw">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DHS POS</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      color: #222;
-    }
-    header {
-      background: #0f172a;
-      color: white;
-      padding: 20px;
-    }
-    header h1 { margin: 0; }
-    .container { padding: 18px; }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-    .card {
-      background: white;
-      padding: 18px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px #0001;
-    }
-    .card h3 { margin: 0 0 8px; }
-    .number {
-      font-size: 26px;
-      font-weight: bold;
-      color: #15803d;
-    }
-    .menu {
-      margin-top: 20px;
-      display: grid;
-      gap: 10px;
-    }
-    button {
-      width: 100%;
-      padding: 15px;
-      border: 0;
-      border-radius: 10px;
-      background: #15803d;
-      color: white;
-      font-size: 16px;
-      text-align: left;
-    }
-    @media (min-width: 800px) {
-      .cards { grid-template-columns: repeat(4, 1fr); }
-      .container { max-width: 1200px; margin: auto; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DHS POS</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f4f6f8;
+color:#222
+}
+header{
+background:#087f3e;
+color:white;
+padding:18px
+}
+header h1{margin:0}
+header small{font-size:14px}
+.container{padding:15px;max-width:1200px;margin:auto}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px
+}
+.card{
+background:white;
+padding:16px;
+border-radius:12px;
+box-shadow:0 2px 8px #0001
+}
+.card h3{margin:0 0 8px}
+.number{
+font-size:25px;
+font-weight:bold;
+color:#087f3e
+}
+
+.menu{
+display:grid;
+gap:10px;
+margin-top:20px
+}
+button{
+border:0;
+border-radius:9px;
+padding:14px;
+font-size:15px;
+cursor:pointer
+}
+.menu button{
+background:#087f3e;
+color:white;
+text-align:left
+}
+button:hover{opacity:.9}
+
+.page{
+display:none;
+background:white;
+padding:18px;
+margin-top:20px;
+border-radius:12px
+}
+.page.active{display:block}
+
+input,select{
+width:100%;
+padding:12px;
+margin:6px 0 12px;
+border:1px solid #ccc;
+border-radius:7px
+}
+
+.primary{
+background:#087f3e;
+color:white
+}
+.danger{
+background:#c62828;
+color:white
+}
+.secondary{
+background:#555;
+color:white
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px
+}
+th,td{
+border:1px solid #ddd;
+padding:9px;
+text-align:left
+}
+th{background:#087f3e;color:white}
+
+.total{
+font-size:22px;
+font-weight:bold;
+margin:15px 0;
+color:#087f3e
+}
+
+.alert{
+padding:12px;
+background:#fff3cd;
+border-radius:8px;
+margin-top:10px
+}
+
+@media(min-width:800px){
+.cards{grid-template-columns:repeat(4,1fr)}
+.menu{grid-template-columns:repeat(4,1fr)}
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>DHS POS</h1>
-  <small>Online & Offline Sales Management System</small>
+<h1>DHS POS</h1>
+<small>Online & Offline Sales Management System</small>
 </header>
 
 <div class="container">
 
-  <h2>Dashboard</h2>
+<h2>Dashboard</h2>
 
-  <div class="cards">
-    <div class="card">
-      <h3>Today's Sales</h3>
-      <div class="number">TZS 0</div>
-    </div>
+<div class="cards">
+<div class="card">
+<h3>Today's Sales</h3>
+<div class="number" id="todaySales">TZS 0</div>
+</div>
 
-    <div class="card">
-      <h3>Products</h3>
-      <div class="number">0</div>
-    </div>
+<div class="card">
+<h3>Products</h3>
+<div class="number" id="productCount">0</div>
+</div>
 
-    <div class="card">
-      <h3>Low Stock</h3>
-      <div class="number">0</div>
-    </div>
+<div class="card">
+<h3>Low Stock</h3>
+<div class="number" id="lowStock">0</div>
+</div>
 
-    <div class="card">
-      <h3>Branches</h3>
-      <div class="number">0</div>
-    </div>
-  </div>
+<div class="card">
+<h3>Branches</h3>
+<div class="number" id="branchCount">0</div>
+</div>
+</div>
 
-  <div class="menu">
-    <button>🛒 Sales / POS</button>
-    <button>📦 Products</button>
-    <button>📊 Stock</button>
-    <button>👥 Customers</button>
-    <button>🏢 Branches / Offices</button>
-    <button>📈 Reports</button>
-    <button>👤 Users</button>
-    <button>⚙️ Settings</button>
-  </div>
+<div class="menu">
+
+<button onclick="showPage('sales')">🛒 Sales / POS</button>
+<button onclick="showPage('products')">📦 Products</button>
+<button onclick="showPage('stock')">📊 Stock</button>
+<button onclick="showPage('customers')">👥 Customers</button>
+<button onclick="showPage('branches')">🏢 Branches / Offices</button>
+<button onclick="showPage('reports')">📈 Reports</button>
+<button onclick="showPage('users')">👤 Users</button>
+<button onclick="showPage('settings')">⚙️ Settings</button>
 
 </div>
+
+
+<!-- SALES -->
+
+<div id="sales" class="page">
+
+<h2>🛒 Sales / POS</h2>
+
+<label>Product</label>
+<select id="saleProduct"></select>
+
+<label>Quantity</label>
+<input id="saleQty" type="number" value="1" min="1">
+
+<label>Sale Type</label>
+<select id="saleType">
+<option>Retail</option>
+<option>Wholesale</option>
+</select>
+
+<button class="primary" onclick="addSale()">Add Sale</button>
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="saleTable"></tbody>
+</table>
+
+<div class="total">
+Total: TZS <span id="saleTotal">0</span>
+</div>
+
+<button class="primary" onclick="completeSale()">Complete Sale</button>
+<button class="secondary" onclick="printInvoice()">🖨️ Print Invoice</button>
+
+</div>
+
+
+<!-- PRODUCTS -->
+
+<div id="products" class="page">
+
+<h2>📦 Products</h2>
+
+<input id="pName" placeholder="Product name">
+<input id="pCategory" placeholder="Category">
+<input id="pUnit" placeholder="Unit mfano: pcs, box, bottle">
+<input id="pPrice" type="number" placeholder="Retail price">
+<input id="pWholesale" type="number" placeholder="Wholesale price">
+<input id="pStock" type="number" placeholder="Opening stock">
+<input id="pLow" type="number" placeholder="Low stock level">
+
+<button class="primary" onclick="addProduct()">Add Product</button>
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Category</th>
+<th>Unit</th>
+<th>Retail</th>
+<th>Wholesale</th>
+<th>Stock</th>
+</tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
+
+</div>
+
+
+<!-- STOCK -->
+
+<div id="stock" class="page">
+
+<h2>📊 Stock Management</h2>
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Stock</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="stockTable"></tbody>
+</table>
+
+</div>
+
+
+<!-- CUSTOMERS -->
+
+<div id="customers" class="page">
+
+<h2>👥 Customers</h2>
+
+<input id="cName" placeholder="Customer name">
+<input id="cPhone" placeholder="Phone number">
+
+<button class="primary" onclick="addCustomer()">Add Customer</button>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Phone</th>
+</tr>
+</thead>
+<tbody id="customerTable"></tbody>
+</table>
+
+</div>
+
+
+<!-- BRANCHES -->
+
+<div id="branches" class="page">
+
+<h2>🏢 Branches / Offices</h2>
+
+<input id="bName" placeholder="Branch name">
+<input id="bLocation" placeholder="Location">
+<input id="bPhone" placeholder="Phone">
+
+<button class="primary" onclick="addBranch()">Register Branch</button>
+
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Location</th>
+<th>Phone</th>
+</tr>
+</thead>
+<tbody id="branchTable"></tbody>
+</table>
+
+</div>
+
+
+<!-- REPORTS -->
+
+<div id="reports" class="page">
+
+<h2>📈 Reports</h2>
+
+<div class="card">
+<h3>Total Sales</h3>
+<div class="number" id="reportSales">TZS 0</div>
+</div>
+
+<div class="card">
+<h3>Total Transactions</h3>
+<div class="number" id="reportTransactions">0</div>
+</div>
+
+<br>
+
+<button class="primary" onclick="exportReport()">Export Report</button>
+
+</div>
+
+
+<!-- USERS -->
+
+<div id="users" class="page">
+
+<h2>👤 Users</h2>
+
+<input id="uName" placeholder="Username">
+<select id="uRole">
+<option>Admin</option>
+<option>Seller</option>
+</select>
+
+<button class="primary" onclick="addUser()">Add User</button>
+
+<table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody id="userTable"></tbody>
+</table>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div id="settings" class="page">
+
+<h2>⚙️ Settings</h2>
+
+<label>Business Name</label>
+<input id="businessName" value="DHS POS">
+
+<label>Business Phone</label>
+<input id="businessPhone">
+
+<label>Business Location</label>
+<input id="businessLocation">
+
+<button class="primary" onclick="saveSettings()">Save Settings</button>
+
+<div class="alert">
+DHS POS inaweza kuhifadhi taarifa kwenye kifaa hiki kwa kutumia Local Storage.
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let products=JSON.parse(localStorage.getItem("dhs_products")||"[]");
+let customers=JSON.parse(localStorage.getItem("dhs_customers")||"[]");
+let branches=JSON.parse(localStorage.getItem("dhs_branches")||"[]");
+let users=JSON.parse(localStorage.getItem("dhs_users")||"[]");
+let sales=JSON.parse(localStorage.getItem("dhs_sales")||"[]");
+
+let cart=[];
+
+
+function save(){
+localStorage.setItem("dhs_products",JSON.stringify(products));
+localStorage.setItem("dhs_customers",JSON.stringify(customers));
+localStorage.setItem("dhs_branches",JSON.stringify(branches));
+localStorage.setItem("dhs_users",JSON.stringify(users));
+localStorage.setItem("dhs_sales",JSON.stringify(sales));
+}
+
+
+function showPage(id){
+
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
+});
+
+document.getElementById(id).classList.add("active");
+
+}
+
+
+function addProduct(){
+
+let product={
+name:pName.value,
+category:pCategory.value,
+unit:pUnit.value,
+price:Number(pPrice.value),
+wholesale:Number(pWholesale.value),
+stock:Number(pStock.value),
+low:Number(pLow.value)
+};
+
+if(!product.name){
+alert("Weka jina la bidhaa");
+return;
+}
+
+products.push(product);
+save();
+render();
+
+pName.value="";
+pCategory.value="";
+pUnit.value="";
+pPrice.value="";
+pWholesale.value="";
+pStock.value="";
+pLow.value="";
+
+alert("Bidhaa imeongezwa");
+
+}
+
+
+function addCustomer(){
+
+if(!cName.value)return;
+
+customers.push({
+name:cName.value,
+phone:cPhone.value
+});
+
+save();
+render();
+
+cName.value="";
+cPhone.value="";
+
+}
+
+
+function addBranch(){
+
+if(!bName.value)return;
+
+branches.push({
+name:bName.value,
+location:bLocation.value,
+phone:bPhone.value
+});
+
+save();
+render();
+
+bName.value="";
+bLocation.value="";
+bPhone.value="";
+
+}
+
+
+function addUser(){
+
+if(!uName.value)return;
+
+users.push({
+name:uName.value,
+role:uRole.value
+});
+
+save();
+render();
+
+uName.value="";
+
+}
+
+
+function addSale(){
+
+let index=saleProduct.value;
+
+if(index==="")return;
+
+let product=products[index];
+let qty=Number(saleQty.value);
+
+if(qty>product.stock){
+alert("Stock haitoshi");
+return;
+}
+
+let price=saleType.value==="Wholesale"
+?product.wholesale
+:product.price;
+
+cart.push({
+name:product.name,
+qty:qty,
+price:price,
+total:qty*price
+});
+
+renderCart();
+
+}
+
+
+function renderCart(){
+
+let html="";
+let total=0;
+
+cart.forEach(item=>{
+
+total+=item.total;
+
+html+=`
+<tr>
+<td>${item.name}</td>
+<td>${item.qty}</td>
+<td>${item.price}</td>
+<td>${item.total}</td>
+</tr>
+`;
+
+});
+
+saleTable.innerHTML=html;
+saleTotal.innerText=total.toLocaleString();
+
+}
+
+
+function completeSale(){
+
+if(cart.length===0){
+alert("Hakuna bidhaa kwenye mauzo");
+return;
+}
+
+let total=0;
+
+cart.forEach(item=>{
+
+let product=products.find(p=>p.name===item.name);
+
+if(product){
+product.stock-=item.qty;
+}
+
+total+=item.total;
+
+});
+
+sales.push({
+date:new Date().toISOString(),
+total:total,
+items:cart
+});
+
+cart=[];
+
+save();
+render();
+renderCart();
+
+alert("Mauzo yamekamilika");
+
+}
+
+
+function printInvoice(){
+
+if(cart.length===0){
+alert("Ongeza bidhaa kwanza");
+return;
+}
+
+let html=`
+<h1>DHS POS</h1>
+<h3>Sales Invoice</h3>
+<hr>
+`;
+
+cart.forEach(x=>{
+html+=`
+<p>${x.name} × ${x.qty} = TZS ${x.total.toLocaleString()}</p>
+`;
+});
+
+html+=`
+<hr>
+<h2>Total: TZS ${cart.reduce((a,b)=>a+b.total,0).toLocaleString()}</h2>
+`;
+
+let w=window.open("");
+
+w.document.write(html);
+w.print();
+
+}
+
+
+function exportReport(){
+
+let text="DHS POS REPORT\n\n";
+
+sales.forEach((s,i)=>{
+text+=
+(i+1)+". "+
+new Date(s.date).toLocaleString()+
+" - TZS "+
+s.total+
+"\n";
+});
+
+let blob=new Blob([text],{type:"text/plain"});
+let url=URL.createObjectURL(blob);
+
+let a=document.createElement("a");
+a.href=url;
+a.download="DHS-POS-Report.txt";
+a.click();
+
+}
+
+
+function render(){
+
+productCount.innerText=products.length;
+branchCount.innerText=branches.length;
+
+let low=products.filter(p=>p.stock<=p.low).length;
+lowStock.innerText=low;
+
+let total=sales.reduce((a,b)=>a+b.total,0);
+
+todaySales.innerText="TZS "+total.toLocaleString();
+reportSales.innerText="TZS "+total.toLocaleString();
+reportTransactions.innerText=sales.length;
+
+
+productTable.innerHTML=products.map(p=>`
+<tr>
+<td>${p.name}</td>
+<td>${p.category}</td>
+<td>${p.unit}</td>
+<td>${p.price}</td>
+<td>${p.wholesale}</td>
+<td>${p.stock}</td>
+</tr>
+`).join("");
+
+
+stockTable.innerHTML=products.map(p=>`
+<tr>
+<td>${p.name}</td>
+<td>${p.stock}</td>
+<td>${p.stock<=p.low?"LOW STOCK":"OK"}</td>
+</tr>
+`).join("");
+
+
+customerTable.innerHTML=customers.map(c=>`
+<tr>
+<td>${c.name}</td>
+<td>${c.phone}</td>
+</tr>
+`).join("");
+
+
+branchTable.innerHTML=branches.map(b=>`
+<tr>
+<td>${b.name}</td>
+<td>${b.location}</td>
+<td>${b.phone}</td>
+</tr>
+`).join("");
+
+
+userTable.innerHTML=users.map(u=>`
+<tr>
+<td>${u.name}</td>
+<td>${u.role}</td>
+</tr>
+`).join("");
+
+
+saleProduct.innerHTML=
+`<option value="">Chagua bidhaa</option>`+
+products.map((p,i)=>
+`<option value="${i}">
+${p.name} - TZS ${p.price}
+</option>`
+).join("");
+
+}
+
+
+function saveSettings(){
+
+localStorage.setItem(
+"dhs_business",
+JSON.stringify({
+name:businessName.value,
+phone:businessPhone.value,
+location:businessLocation.value
+})
+);
+
+alert("Settings zimehifadhiwa");
+
+}
+
+
+render();
+
+</script>
 
 </body>
 </html>
