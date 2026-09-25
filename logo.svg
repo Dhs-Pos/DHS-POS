@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220">
+  <rect width="700" height="220" fill="#ffffff"/>
+  <g transform="translate(25 25)">
+    <text x="0" y="95" font-family="Arial,sans-serif" font-size="100" font-weight="900" fill="#35d04f">D</text>
+    <text x="55" y="95" font-family="Arial,sans-serif" font-size="100" font-weight="900" fill="#35d04f">C</text>
+    <text x="34" y="145" font-family="Arial,sans-serif" font-size="70" font-weight="900" fill="#e00000">+</text>
+  </g>
+  <text x="180" y="100" font-family="Arial,sans-serif" font-size="55" font-weight="900" fill="#35d04f">DREAM CHASER</text>
+  <text x="280" y="160" font-family="Georgia,serif" font-size="38" font-style="italic" fill="#222222">Health Services</text>
+</svg>
