@@ -853,6 +853,18 @@ render();
     }
   }
 })();
+const logoutBtn = document.createElement("button");
+logoutBtn.textContent = "🚪 Logout";
+logoutBtn.style.cssText =
+"position:fixed;top:15px;right:15px;background:#e53935;color:white;border:0;border-radius:8px;padding:10px 15px;font-size:15px;z-index:9999;";
+
+logoutBtn.onclick = function () {
+  localStorage.removeItem("dhsLoggedIn");
+  localStorage.removeItem("dhsRole");
+  location.reload();
+};
+
+document.body.appendChild(logoutBtn);
 </script>
 
 </body>
