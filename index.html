@@ -160,6 +160,7 @@ margin-top:10px
 <button onclick="showPage('sales')">🛒 Sales / POS</button>
 <button onclick="showPage('products')">📦 Products</button>
 <button onclick="showPage('stock')">📊 Stock</button>
+<button onclick="showPage('orders')">📝 Order Requests</button>
 <button onclick="showPage('customers')">👥 Customers</button>
 <button onclick="showPage('branches')">🏢 Branches / Offices</button>
 <button onclick="showPage('reports')">📈 Reports</button>
@@ -263,6 +264,30 @@ Total: TZS <span id="saleTotal">0</span>
 
 </div>
 
+
+<!-- ORDER REQUESTS -->
+
+<div id="orders" class="page">
+
+<h2>📝 Order Requests</h2>
+
+<label>Chagua Bidhaa</label>
+<select id="orderProduct">
+<option value="">Chagua bidhaa</option>
+</select>
+
+<label>Kiasi cha Kuomba</label>
+<input id="orderQty" type="number" value="1" min="1">
+
+<button class="primary" onclick="submitOrderRequest()">
+📤 Submit Order Request
+</button>
+
+<p style="color:#666;">
+Ombi litatumwa kwa Admin kwa ajili ya review na approval.
+</p>
+
+</div>
 
 <!-- CUSTOMERS -->
 
@@ -398,6 +423,7 @@ let branches=JSON.parse(localStorage.getItem("dhs_branches")||"[]");
 let users=JSON.parse(localStorage.getItem("dhs_users")||"[]");
 let sales=JSON.parse(localStorage.getItem("dhs_sales")||"[]");
 
+let orders=JSON.parse(localStorage.getItem("dhs_orders")||"[]");
 let cart=[];
 
 
@@ -407,6 +433,7 @@ localStorage.setItem("dhs_customers",JSON.stringify(customers));
 localStorage.setItem("dhs_branches",JSON.stringify(branches));
 localStorage.setItem("dhs_users",JSON.stringify(users));
 localStorage.setItem("dhs_sales",JSON.stringify(sales));
+localStorage.setItem("dhs_orders",JSON.stringify(orders));
 }
 
 
@@ -659,9 +686,350 @@ a.click();
 
 }
 
+function submitOrderRequest(){
+
+let productIndex=orderProduct.value;
+let qty=Number(orderQty.value);
+
+if(productIndex===""){
+alert("Chagua bidhaa");
+return;
+}
+
+if(!qty || qty<1){
+alert("Weka kiasi sahihi");
+return;
+}
+
+let product=products[Number(productIndex)];
+
+orders.push({
+id:"ORD-"+Date.now(),
+requestedBy:"user",
+items:[{
+name:product.name,
+qty:qty,
+unit:product.unit||"pcs"
+}],
+status:"pending",
+reason:"",
+createdAt:new Date().toISOString()
+});
+
+save();
+render();
+
+alert("Order request imetumwa kwa Admin");
+
+orderQty.value=1;
+
+}
+function currentRole(){
+return localStorage.getItem("dhsRole")||"";
+}
+
+function currentUser(){
+return localStorage.getItem("dhsUser")||"user";
+}
+
+function submitOrderRequest(){
+
+let productIndex=orderProduct.value;
+let qty=Number(orderQty.value);
+
+if(productIndex===""){
+alert("Chagua bidhaa");
+return;
+}
+
+if(!qty || qty<1){
+alert("Weka kiasi sahihi");
+return;
+}
+
+let product=products[Number(productIndex)];
+
+orders.push({
+id:"ORD-"+Date.now(),
+requestedBy:currentUser(),
+items:[{
+name:product.name,
+qty:qty,
+unit:product.unit||"pcs"
+}],
+status:"pending",
+reason:"",
+createdAt:new Date().toISOString()
+});
+
+save();
+render();
+
+alert("Order request imetumwa kwa Admin");
+
+orderQty.value=1;
+}
+
+function approveOrder(id){
+
+if(currentRole()!=="admin"){
+alert("Admin pekee ndiye anaweza ku-approve");
+return;
+}
+
+let order=orders.find(o=>o.id===id);
+
+if(!order)return;
+
+order.status="approved";
+order.reason="";
+order.approvedAt=new Date().toISOString();
+
+save();
+render();
+
+alert("Order ime-approve. Mhudumu anaweza ku-complete.");
+}
+
+function rejectOrder(id){
+
+if(currentRole()!=="admin"){
+alert("Admin pekee ndiye anaweza ku-reject");
+return;
+}
+
+let order=orders.find(o=>o.id===id);
+
+if(!order)return;
+
+let reason=prompt("Andika sababu ya kukataa order:");
+
+if(!reason || !reason.trim()){
+alert("Sababu ya rejection inahitajika");
+return;
+}
+
+order.status="rejected";
+order.reason=reason.trim();
+order.rejectedAt=new Date().toISOString();
+
+save();
+render();
+
+alert("Order imekataliwa");
+}
+
+function editOrder(id){
+
+if(currentRole()!=="admin"){
+alert("Admin pekee ndiye anaweza ku-edit");
+return;
+}
+
+let order=orders.find(o=>o.id===id);
+
+if(!order)return;
+
+let current=order.items.map(x=>x.name+":"+x.qty).join(", ");
+
+let input=prompt(
+"Edit/Add bidhaa. Tumia mfumo:\nJina la bidhaa:kiasi, Jina jingine:kiasi\n\nBidhaa zilizopo:\n"+
+products.map(p=>p.name).join(", ")+"\n\nMfano:\nParacetamol:10, Amoxicillin:5",
+current
+);
+
+if(input===null)return;
+
+let parts=input.split(",");
+let newItems=[];
+
+for(let part of parts){
+
+let bits=part.trim().split(":");
+
+if(bits.length<2)continue;
+
+let name=bits.slice(0,-1).join(":").trim();
+let qty=Number(bits[bits.length-1]);
+
+let product=products.find(
+p=>p.name.toLowerCase()===name.toLowerCase()
+);
+
+if(!product || !qty || qty<1){
+alert("Bidhaa au kiasi si sahihi: "+part.trim());
+return;
+}
+
+newItems.push({
+name:product.name,
+qty:qty,
+unit:product.unit||"pcs"
+});
+
+}
+
+if(newItems.length===0){
+alert("Weka angalau bidhaa moja");
+return;
+}
+
+order.items=newItems;
+order.status="pending";
+order.reason="Admin ame-edit order; inasubiri approval";
+order.editedAt=new Date().toISOString();
+
+save();
+render();
+
+alert("Order imehaririwa. Inasubiri approval.");
+}
+
+function completeOrder(id){
+
+if(currentRole()!=="user"){
+alert("Mhudumu pekee ndiye anaweza ku-complete");
+return;
+}
+
+let order=orders.find(o=>o.id===id);
+
+if(!order)return;
+
+if(order.requestedBy!==currentUser()){
+alert("Hii order si ya mhudumu huyu");
+return;
+}
+
+if(order.status!=="approved"){
+alert("Order lazima i-approve kwanza");
+return;
+}
+
+for(let item of order.items){
+
+let product=products.find(
+p=>p.name.toLowerCase()===item.name.toLowerCase()
+);
+
+if(!product){
+alert("Bidhaa haipo kwenye mfumo: "+item.name);
+return;
+}
+
+}
+
+for(let item of order.items){
+
+let product=products.find(
+p=>p.name.toLowerCase()===item.name.toLowerCase()
+);
+
+product.stock += Number(item.qty);
+
+}
+
+order.status="completed";
+order.completedAt=new Date().toISOString();
+
+save();
+render();
+
+alert("Order ime-complete na stock imeongezwa");
+}
+function renderOrderProducts(){
+
+if(!orderProduct)return;
+
+orderProduct.innerHTML=
+'<option value="">Chagua bidhaa</option>'+
+products.map((p,i)=>
+'<option value="'+i+'">'+
+p.name+' - Stock: '+p.stock+
+'</option>'
+).join("");
+
+}
+function renderOrders(){
+
+let role=currentRole();
+
+if(!orderTable)return;
+
+let visible=role==="admin"
+?orders
+:orders.filter(o=>o.requestedBy===currentUser());
+
+orderTable.innerHTML=visible.map(o=>{
+
+let items=o.items.map(x=>
+x.name+" × "+x.qty
+).join("<br>");
+
+let actions="";
+
+if(role==="admin"){
+
+if(o.status==="pending" || o.status==="rejected"){
+actions+=
+'<button class="secondary" onclick="editOrder(\''+
+o.id+
+'\')">✏️ Edit/Add</button> ';
+}
+
+if(o.status==="pending"){
+actions+=
+'<button class="primary" onclick="approveOrder(\''+
+o.id+
+'\')">✅ Approve</button> ';
+
+actions+=
+'<button class="danger" onclick="rejectOrder(\''+
+o.id+
+'\')">❌ Reject</button>';
+}
+
+}else{
+
+if(o.status==="approved"){
+
+actions=
+'<button class="primary" onclick="completeOrder(\''+
+o.id+
+'\')">📦 Complete</button>';
+
+}
+
+}
+
+return '<tr>'+
+'<td>'+o.id+'</td>'+
+'<td>'+o.requestedBy+'</td>'+
+'<td>'+items+'</td>'+
+'<td>'+o.status.toUpperCase()+'</td>'+
+'<td>'+(o.reason||"")+'</td>'+
+'<td>'+new Date(o.createdAt).toLocaleString()+'</td>'+
+'<td>'+actions+'</td>'+
+'</tr>';
+
+}).join("");
+
+if(sellerOrderBox){
+sellerOrderBox.style.display=
+role==="admin"?"none":"block";
+}
+
+if(adminOrderBox){
+adminOrderBox.style.display=
+role==="admin"?"block":"none";
+}
+
+}
 
 function render(){
 
+renderOrderProducts();
+renderOrders();
 productCount.innerText=products.length;
 branchCount.innerText=branches.length;
 
@@ -827,8 +1195,10 @@ render();
 
     if (users[username] && users[username].password === password) {
       localStorage.setItem("dhsLoggedIn", "true");
-      localStorage.setItem("dhsRole", users[username].role);
+      localStorage.setItem("dhsRole",
+ users[username].role);
 
+localStorage.setItem("dhsUser", username);
       document.getElementById("dhsLogin").style.display = "none";
 
       if (users[username].role === "user") {
@@ -861,6 +1231,7 @@ logoutBtn.style.cssText =
 logoutBtn.onclick = function () {
   localStorage.removeItem("dhsLoggedIn");
   localStorage.removeItem("dhsRole");
+localStorage.removeItem("dhsUser");
   location.reload();
 };
 
