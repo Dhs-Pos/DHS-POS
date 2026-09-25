@@ -751,6 +751,109 @@ alert("Settings zimehifadhiwa");
 render();
 
 </script>
+<script>
+/* DHS POS - ADMIN & USER LOGIN */
+(function () {
+  const loginBox = document.createElement("div");
+
+  loginBox.innerHTML = `
+    <div id="dhsLogin" style="
+      position:fixed;
+      inset:0;
+      background:#f4f6f8;
+      z-index:99999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Arial,sans-serif;
+      padding:20px;
+    ">
+      <div style="
+        background:white;
+        width:100%;
+        max-width:400px;
+        padding:25px;
+        border-radius:15px;
+        box-shadow:0 5px 25px rgba(0,0,0,.2);
+      ">
+        <h2 style="text-align:center;color:#087f5b;">
+          DHS POS
+        </h2>
+
+        <p style="text-align:center;">
+          Ingia kwenye mfumo
+        </p>
+
+        <input id="dhsUsername"
+          placeholder="Username"
+          style="width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;">
+
+        <input id="dhsPassword"
+          type="password"
+          placeholder="Password"
+          style="width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;">
+
+        <button id="dhsLoginBtn"
+          style="width:100%;padding:14px;background:#087f5b;color:white;border:0;border-radius:8px;margin-top:10px;font-size:16px;">
+          LOGIN
+        </button>
+
+        <p id="dhsError"
+          style="color:red;text-align:center;"></p>
+
+        <small style="display:block;text-align:center;color:#777;">
+          DHS POS • Sales Management System
+        </small>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(loginBox);
+
+  const users = {
+    admin: {
+      password: "admin123",
+      role: "admin"
+    },
+    user: {
+      password: "user123",
+      role: "user"
+    }
+  };
+
+  document.getElementById("dhsLoginBtn").onclick = function () {
+    const username = document.getElementById("dhsUsername").value.trim();
+    const password = document.getElementById("dhsPassword").value;
+
+    if (users[username] && users[username].password === password) {
+      localStorage.setItem("dhsLoggedIn", "true");
+      localStorage.setItem("dhsRole", users[username].role);
+
+      document.getElementById("dhsLogin").style.display = "none";
+
+      if (users[username].role === "user") {
+        document.body.classList.add("dhs-user");
+      }
+
+      alert(
+        "Karibu DHS POS - " +
+        users[username].role.toUpperCase()
+      );
+    } else {
+      document.getElementById("dhsError").textContent =
+        "Username au password si sahihi.";
+    }
+  };
+
+  if (localStorage.getItem("dhsLoggedIn") === "true") {
+    document.getElementById("dhsLogin").style.display = "none";
+
+    if (localStorage.getItem("dhsRole") === "user") {
+      document.body.classList.add("dhs-user");
+    }
+  }
+})();
+</script>
 
 </body>
 </html>
