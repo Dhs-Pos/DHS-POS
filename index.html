@@ -427,7 +427,7 @@ DHS POS inaweza kuhifadhi taarifa kwenye kifaa hiki kwa kutumia Local Storage.
 
 <script>
 
-let products=JSON.parse(localStorage.getItem("dhs_products")||"[]");
+let products=[];
 let customers=JSON.parse(localStorage.getItem("dhs_customers")||"[]");
 let branches=JSON.parse(localStorage.getItem("dhs_branches")||"[]");
 let users=JSON.parse(localStorage.getItem("dhs_users")||"[]");
@@ -458,16 +458,21 @@ document.getElementById(id).classList.add("active");
 }
 
 
-function addProduct(){
+  async function addProduct(){
 
 let product={
-name:pName.value,
-category:pCategory.value,
-unit:pUnit.value,
-price:Number(pPrice.value),
-wholesale:Number(pWholesale.value),
+name:pName.value.trim(),
+category:pCategory.value.trim(),
+unit:pUnit.value.trim(),
+cost_price:0,
+selling_price:Number(pPrice.value),
+wholesale_price:Number(pWholesale.value),
 stock:Number(pStock.value),
-low:Number(pLow.value)
+low_stock_level:Number(pLow.value),
+out_of_stock:Number(pStock.value)<=0,
+active:true,
+batch_number:null,
+expiry_date:null
 };
 
 if(!product.name){
@@ -475,8 +480,28 @@ alert("Weka jina la bidhaa");
 return;
 }
 
-products.push(product);
-save();
+const {data,error}=await db
+.from("products")
+.insert(product)
+.select()
+.single();
+
+if(error){
+console.error(error);
+alert("Bidhaa haijaongezwa: "+error.message);
+return;
+}
+
+products.push({
+name:data.name,
+category:data.category,
+unit:data.unit,
+price:Number(data.selling_price),
+wholesale:Number(data.wholesale_price),
+stock:Number(data.stock),
+low:Number(data.low_stock_level)
+});
+
 render();
 
 pName.value="";
@@ -487,9 +512,11 @@ pWholesale.value="";
 pStock.value="";
 pLow.value="";
 
-alert("Bidhaa imeongezwa");
+alert("Bidhaa imeongezwa online kwenye Supabase");
 
 }
+
+
 
 
 function addCustomer(){
