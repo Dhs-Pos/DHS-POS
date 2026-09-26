@@ -238,7 +238,7 @@ Total: TZS <span id="saleTotal">0</span>
 <input id="pLow" type="number" placeholder="Low Stock Level">
 <input id="pExpiry" type="date" placeholder="Expiry Date">
 
-<button class="primary" onclick="alert('BUTTON INAFANYA KAZI'); addProduct()">Add Product</button>
+<button class="primary" onclick="addProduct()">Add Product</button>
 
 <table>
 <thead>
@@ -465,6 +465,16 @@ document.getElementById(id).classList.add("active");
 
   async function addProduct(){
 
+const pName = document.getElementById("pName");
+const pCategory = document.getElementById("pCategory");
+const pUnit = document.getElementById("pUnit");
+const pStock = document.getElementById("pStock");
+const pBuy = document.getElementById("pBuy");
+const pPrice = document.getElementById("pPrice");
+const pWholesale = document.getElementById("pWholesale");
+const pLow = document.getElementById("pLow");
+const pExpiry = document.getElementById("pExpiry");
+
 let product={
 name:pName.value.trim(),
 category:pCategory.value.trim(),
@@ -479,7 +489,6 @@ active:true,
 batch_number:null,
 expiry_date:pExpiry.value || null
 };
-    
 
 if(!product.name){
 alert("Weka jina la bidhaa");
