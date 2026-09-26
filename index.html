@@ -231,10 +231,12 @@ Total: TZS <span id="saleTotal">0</span>
 <input id="pName" placeholder="Product name">
 <input id="pCategory" placeholder="Category">
 <input id="pUnit" placeholder="Unit mfano: pcs, box, bottle">
-<input id="pPrice" type="number" placeholder="Retail price">
-<input id="pWholesale" type="number" placeholder="Wholesale price">
-<input id="pStock" type="number" placeholder="Opening stock">
-<input id="pLow" type="number" placeholder="Low stock level">
+<input id="pStock" type="number" placeholder="Quantity">
+<input id="pBuy" type="number" placeholder="Buy Price (per unit)">
+<input id="pPrice" type="number" placeholder="Sell Price (per unit)">
+<input id="pWholesale" type="number" placeholder="Wholesale Price">
+<input id="pLow" type="number" placeholder="Low Stock Level">
+<input id="pExpiry" type="date" placeholder="Expiry Date">
 
 <button class="primary" onclick="addProduct()">Add Product</button>
 
@@ -244,9 +246,12 @@ Total: TZS <span id="saleTotal">0</span>
 <th>Product</th>
 <th>Category</th>
 <th>Unit</th>
-<th>Retail</th>
+<th>Quantity</th>
+<th>Buy Price</th>
+<th>Sell Price</th>
 <th>Wholesale</th>
-<th>Stock</th>
+<th>Low Stock</th>
+<th>Expiry Date</th>
 </tr>
 </thead>
 <tbody id="productTable"></tbody>
@@ -464,16 +469,17 @@ let product={
 name:pName.value.trim(),
 category:pCategory.value.trim(),
 unit:pUnit.value.trim(),
-cost_price:0,
+stock:Number(pStock.value),
+cost_price:Number(pBuy.value),
 selling_price:Number(pPrice.value),
 wholesale_price:Number(pWholesale.value),
-stock:Number(pStock.value),
 low_stock_level:Number(pLow.value),
 out_of_stock:Number(pStock.value)<=0,
 active:true,
 batch_number:null,
-expiry_date:null
+expiry_date:pExpiry.value || null
 };
+    
 
 if(!product.name){
 alert("Weka jina la bidhaa");
@@ -496,10 +502,12 @@ products.push({
 name:data.name,
 category:data.category,
 unit:data.unit,
+stock:Number(data.stock),
+buy:Number(data.cost_price),
 price:Number(data.selling_price),
 wholesale:Number(data.wholesale_price),
-stock:Number(data.stock),
-low:Number(data.low_stock_level)
+low:Number(data.low_stock_level),
+expiry:data.expiry_date
 });
 
 render();
@@ -507,10 +515,12 @@ render();
 pName.value="";
 pCategory.value="";
 pUnit.value="";
+pStock.value="";
+pBuy.value="";
 pPrice.value="";
 pWholesale.value="";
-pStock.value="";
 pLow.value="";
+pExpiry.value="";
 
 alert("Bidhaa imeongezwa online kwenye Supabase");
 
@@ -1085,9 +1095,12 @@ productTable.innerHTML=products.map(p=>`
 <td>${p.name}</td>
 <td>${p.category}</td>
 <td>${p.unit}</td>
+<td>${p.quantity}</td>
+<td>${p.buy||0}</td>
 <td>${p.price}</td>
 <td>${p.wholesale}</td>
-<td>${p.stock}</td>
+<td>${p.low}</td>
+<td>${p.expiry||""}</td>
 </tr>
 `).join("");
 
