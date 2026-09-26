@@ -501,6 +501,7 @@ const {data,error}=await db
 .select()
 .single();
 alert("IMEFIKA SUPABASE");
+   alert(error ? "ERROR: " + error.message : "NO ERROR"); 
 if(error){
 console.error(error);
 alert("Bidhaa haijaongezwa: "+error.message);
