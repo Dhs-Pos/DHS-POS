@@ -1153,7 +1153,34 @@ alert("Settings zimehifadhiwa");
 }
 
 
+async function loadProducts(){
+
+const {data,error}=await db
+.from("products")
+.select("*")
+.order("created_at",{ascending:false});
+
+if(error){
+console.error(error);
+alert("Imeshindikana kupakia bidhaa: "+error.message);
+return;
+}
+
+products=data.map(p=>({
+name:p.name,
+category:p.category,
+unit:p.unit,
+price:Number(p.selling_price),
+wholesale:Number(p.wholesale_price),
+stock:Number(p.stock),
+low:Number(p.low_stock_level)
+}));
+
 render();
+
+}
+
+loadProducts();
 
 </script>
 <script>
